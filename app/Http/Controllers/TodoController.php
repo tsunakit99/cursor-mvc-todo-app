@@ -11,7 +11,8 @@ class TodoController extends Controller
      */
     public function index()
     {
-        //
+        $todos = Todo::all();
+        return view('todos.index', compact('todos'));
     }
 
     /**
@@ -19,7 +20,13 @@ class TodoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|max:255|string',
+            'completed' => 'required|boolean',
+        ]);
+
+        Todo::create($request->all());
+        return redirect()->route('todos.index')->with('success', 'Todo created successfully');
     }
 
     /**
@@ -27,7 +34,8 @@ class TodoController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $todo = Todo::findOrFail($id);
+        return view('todos.show', compact('todo'));
     }
 
     /**
@@ -35,7 +43,14 @@ class TodoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'title' => 'required|max:255|string',
+            'completed' => 'required|boolean',
+        ]);
+
+        $todo = Todo::findOrFail($id);
+        $todo->update($request->all());
+        return redirect()->route('todos.index')->with('success', 'Todo updated successfully');
     }
 
     /**
@@ -43,6 +58,8 @@ class TodoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $todo = Todo::findOrFail($id);
+        $todo->delete();
+        return redirect()->route('todos.index')->with('success', 'Todo deleted successfully');
     }
 }
